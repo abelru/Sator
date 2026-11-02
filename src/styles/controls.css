@@ -1,0 +1,19 @@
+/* mode switch */
+.modes{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.modes button{border:0;background:transparent;padding:7px 18px;border-radius:999px;font-weight:600;font-size:15px;color:var(--muted)}
+.modes button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+
+/* size picker */
+.sizes{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.sizes button{width:40px;height:40px;border-radius:8px;border:1px solid var(--tile-line);background:var(--tile);font-family:var(--serif);font-weight:700;font-size:16px;position:relative}
+.sizes button[aria-checked="true"]{background:var(--lapis);border-color:var(--lapis);color:var(--on-lapis)}
+.sizes button .tick{position:absolute;right:-4px;top:-4px;width:14px;height:14px;border-radius:50%;background:var(--verd);display:none;border:2px solid var(--bg)}
+.sizes button.done .tick{display:block}
+.sizes button.done.assist .tick{background:#E2B42A}
+.caption{margin:10px 0 0;color:var(--muted);font-size:14px;text-align:center;min-height:20px}
+.meta{display:flex;gap:20px;justify-content:center;align-items:center;margin-top:6px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pausebtn{width:30px;height:30px;border:1px solid var(--tile-line);border-radius:50%;background:var(--surface);display:grid;place-items:center;padding:0;margin-left:-8px}
+.pausebtn:hover{border-color:var(--ink)}
+.pausebtn svg{width:14px;height:14px;stroke:var(--ink);stroke-width:2.6;stroke-linecap:round;fill:none}
+.meta b{color:var(--ink);font-weight:700;margin-left:4px}
+

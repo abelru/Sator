@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sator: a daily word square</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Sator is a daily word square puzzle. Fill the grid so every row is a word and each row matches its column.">
+<meta name="theme-color" content="#E6E9ED" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131822" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="left">
+    <button class="icon" id="btnHelp" aria-label="How to play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><circle cx="12" cy="17.6" r=".6" fill="currentColor"/></svg></button>
+  </div>
+  <h1 class="mark">Sator</h1>
+  <div class="right">
+    <button class="icon" id="btnBoard" aria-label="Leaderboard"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4.5M16 6h3a3 3 0 0 1-3 4.5"/><path d="M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg></button>
+    <button class="icon" id="btnStats" aria-label="Statistics"><svg viewBox="0 0 24 24"><path d="M5 20V12M10 20V5M15 20v-9M20 20V8"/></svg></button>
+    <button class="icon" id="btnSettings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <div class="modes" id="modes" role="tablist" aria-label="Game mode">
+    <button role="tab" id="tabDaily" data-mode="daily">Daily</button>
+    <button role="tab" id="tabUni" data-mode="unlimited">Unlimited</button>
+  </div>
+  <div class="sizes" id="sizes" role="radiogroup" aria-label="Grid size"></div>
+  <p class="caption" id="caption"></p>
+  <div class="meta" id="meta"><span>Time<b id="mTime">0:00</b></span><span>Checks<b id="mChecks">0</b></span><button class="pausebtn" id="btnPause" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg></button></div>
+
+  <div class="stage" id="stage">
+    <div class="tiles" id="tiles" role="group" aria-label="Word square"></div>
+    <div class="markers" id="markers" aria-hidden="true"></div>
+    <div class="cover" id="cover" hidden><button class="btn primary" id="btnPlay">Play</button><p id="coverText"></p></div>
+    <div class="markers cols" id="cmarkers" aria-hidden="true"></div>
+  </div>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  <div class="actions" id="actions">
+    <button class="btn" id="btnHint">Hint: fill a word</button>
+    <button class="btn" id="btnNext">New puzzle</button>
+    <button class="btn quiet" id="btnReveal">Show answer</button>
+    <button class="btn primary" id="btnResult" hidden>See result</button>
+  </div>
+  <div class="kb" id="kb" aria-label="Keyboard"></div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="dlgHelp" aria-labelledby="helpTitle">
+  <div class="dlg">
+    <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="helpTitle">How to play</h2>
+    <p>Fill the grid so every row is a real word, and each row matches the column with the same number. Row 2 reads the same as column 2, row 3 as column 3, and so on.</p>
+    <div class="ex" aria-label="Example: MESH, ECHO, SHIP, HOPE">
+      <div class="l">M</div><div class="l">E</div><div class="l">S</div><div class="l">H</div>
+      <div class="l">E</div><div class="g">C</div><div class="g">H</div><div class="g">O</div>
+      <div class="l">S</div><div class="g">H</div><div class="g">I</div><div class="g">P</div>
+      <div class="l">H</div><div class="g">O</div><div class="g">P</div><div class="g">E</div>
+    </div>
+    <p>You start with the first word filled in across and down. Every letter you type also lands in its mirror spot (row 2, column 4 matches row 4, column 2), so you’re really choosing words, not letters.</p>
+    <p>Tap a square in the top-right half to type down its column, or in the bottom-left half to type across its row. Tap the same square again to switch direction.</p>
+    <p>The puzzle finishes on its own as soon as every row is a real word. Before that, press <b>Check</b> to test your rows. The dots beside each row and under each column show the result:</p>
+    <div class="legend">
+      <div class="mk ok"><span>✓</span></div><div>A real word. Squares where two real words cross turn green.</div>
+      <div class="mk bad"><span>×</span></div><div>Not in the word list. Its letters turn red.</div>
+      <div class="mk dead"><span>!</span></div><div>No word fits the letters so far (you can turn this off in settings).</div>
+    </div>
+    <p>Any valid word counts. Your square doesn’t have to match ours. Stuck? <b>Hint</b> fills in a word that works with the letters you already have. Puzzles solved with hints get a yellow dot instead of a green one.</p>
+    <p>Rare bonus: if the diagonal from the top-left corner to the bottom-right also spells a word when you finish, it lights up gold.</p>
+    <p class="small">Daily gives everyone the same puzzle for each size, with a new one at midnight. Unlimited lets you keep going. Sizes 3 to 6 use everyday words, 7 and 8 need rarer ones, and the 9×9 is a single legendary square that stays put until you crack it.</p>
+    <div class="row-btns"><button class="btn primary" data-close>Play</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlgStats" aria-labelledby="statsTitle">
+  <div class="dlg">
+    <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="statsTitle">Statistics</h2>
+    <div id="statsBody"></div>
+  </div>
+</dialog>
+
+<dialog id="dlgSettings" aria-labelledby="setTitle">
+  <div class="dlg">
+    <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="setTitle">Settings</h2>
+    <div class="setting">
+      <label for="optAssist">Dead-end warnings<span class="small">Flag a row when no word can fit its letters.</span></label>
+      <input type="checkbox" class="switch" id="optAssist">
+    </div>
+    <div class="setting">
+      <label for="optTheme">Theme</label>
+      <select id="optTheme"><option value="system">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgResult" aria-labelledby="resTitle">
+  <div class="dlg">
+    <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="resTitle">Solved</h2>
+    <div id="resBody"></div>
+  </div>
+</dialog>
+
+<dialog id="dlgBoard" aria-labelledby="boardTitle">
+  <div class="dlg">
+    <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="boardTitle">Today’s fastest</h2>
+    <div id="boardBody"></div>
+  </div>
+</dialog>
+
+<dialog id="dlgConfirm" aria-labelledby="cfTitle">
+  <div class="dlg">
+    <h2 id="cfTitle">Show the answer?</h2>
+    <p id="cfText"></p>
+    <div class="row-btns"><button class="btn primary" id="cfYes">Show answer</button><button class="btn" data-close>Keep playing</button></div>
+  </div>
+</dialog>
+
+</body>
+</html>

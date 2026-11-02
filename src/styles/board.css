@@ -1,0 +1,50 @@
+/* board */
+.stage{position:relative;margin-top:14px;margin-bottom:26px}
+.tiles{position:relative;display:grid;grid-template-columns:repeat(var(--n),var(--t));grid-auto-rows:var(--t);gap:var(--g)}
+.tile{position:relative;z-index:1;border:2px solid var(--tile-line);background:var(--tile);border-radius:calc(var(--t) * .12);padding:0;display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:var(--fs);line-height:1;text-transform:uppercase;user-select:none;transition:background-color .25s,border-color .25s,color .25s}
+.tile.filled{border-color:var(--muted)}
+.tile.locked{background:var(--lapis);border-color:var(--lapis);color:var(--on-lapis);cursor:default}
+.tile.word{background:var(--hl)}
+.tile.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink);z-index:2}
+.tile.mirror{border-style:dashed;border-color:var(--ink)}
+.tile.good{background:var(--verd);border-color:var(--verd);color:var(--on-verd)}
+.tile.good.sel{border-color:var(--ink)}
+.tile.bad{color:var(--cinn)}
+.tile.hinted::after{content:"";position:absolute;right:12%;top:12%;width:max(4px,calc(var(--t)*.1));height:max(4px,calc(var(--t)*.1));border-radius:50%;background:var(--gilt)}
+.tile.solved{background:var(--verd);border-color:var(--verd);color:var(--on-verd);transition-delay:calc(var(--d) * 90ms)}
+.tile.revealed:not(.locked){color:var(--muted)}
+.tile.solved.bonus{background:var(--gilt);border-color:var(--gilt);color:var(--on-gilt);transition-delay:calc(var(--i) * 120ms);animation:shine .5s ease-out both;animation-delay:calc(var(--i) * 120ms)}
+@keyframes shine{0%{transform:scale(1)}45%{transform:scale(1.14) rotate(-3deg)}100%{transform:none}}
+.bonus-note{background:var(--gilt);color:var(--on-gilt);border-radius:10px;padding:10px 12px;font-weight:600;margin:0 0 12px}
+.pop{animation:pop .16s ease-out}
+.reflect{animation:reflect .28s ease-out}
+.pulse{animation:pulse .3s ease-out both;animation-delay:calc(var(--k) * 40ms)}
+@keyframes pop{0%{transform:scale(.86)}70%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes reflect{0%{transform:perspective(200px) rotate3d(1,1,0,90deg)}100%{transform:none}}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(.9)}100%{transform:scale(1)}}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+.markers{position:absolute;left:calc(100% + 8px);top:0;display:grid;grid-auto-rows:var(--t);row-gap:var(--g)}
+.mk{width:18px;display:grid;place-items:center}
+.markers.cols{left:0;top:calc(100% + 6px);grid-auto-rows:18px;grid-template-columns:repeat(var(--n),var(--t));column-gap:var(--g)}
+.markers.cols .mk{width:auto}
+.mk span{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--tile-line);display:grid;place-items:center;font-size:11px;font-weight:700;line-height:1}
+.mk.ok span{background:var(--verd);border-color:var(--verd);color:var(--on-verd)}
+.mk.bad span{background:var(--cinn);border-color:var(--cinn);color:#fff}
+.mk.dead span{background:transparent;border-color:var(--gilt);color:var(--gilt)}
+
+.msg{min-height:24px;margin:12px 0 0;font-weight:600;font-size:15px;text-align:center;max-width:42ch}
+.actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.btn{border:1px solid var(--tile-line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+/* play cover */
+.cover{position:absolute;inset:0;z-index:5;display:grid;place-items:center;align-content:center;gap:12px;text-align:center;padding:12px}
+.cover .btn{font-size:18px;padding:12px 40px}
+.cover p{margin:0;max-width:28ch;font-size:14px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:8px}
+.stage.blurred .tiles,.stage.blurred .markers{filter:blur(12px);opacity:.75;pointer-events:none;user-select:none}
+

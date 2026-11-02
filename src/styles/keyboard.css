@@ -1,0 +1,9 @@
+/* keyboard */
+.kb{width:100%;max-width:500px;margin-top:14px;display:flex;flex-direction:column;gap:7px;user-select:none}
+.kb .row{display:flex;gap:5px;justify-content:center}
+.kb button{flex:1;max-width:44px;height:52px;border:0;border-radius:7px;background:var(--key);color:var(--key-ink);font-family:var(--sans);font-weight:700;font-size:15px;box-shadow:var(--shadow);text-transform:uppercase;padding:0}
+.kb button.wide{max-width:72px;flex:1.5;font-size:13px;text-transform:none}
+.kb button.check{background:var(--lapis);color:var(--on-lapis)}
+.kb button:active{transform:translateY(1px)}
+.kb .spacer{flex:.5;max-width:22px}
+
