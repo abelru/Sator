@@ -9,3 +9,24 @@
   .kb .row{gap:4px}
   .mark{font-size:24px}
 }
+/* Short screens (most phones once Safari's address bar and toolbar are showing):
+   tighten the chrome around the board so header, board, buttons and keyboard fit on one screen.
+   layout() in render.js measures these heights, so the board grows into whatever is freed up. */
+@media (max-height:760px){
+  .bar{padding:6px 12px 4px}
+  .mark{font-size:24px}
+  .icon{width:36px;height:36px}
+  main{padding:8px 12px 8px}
+  .modes button{padding:5px 16px;font-size:14px}
+  .sizes{margin-top:8px}
+  .sizes button{width:36px;height:36px;font-size:15px}
+  .caption{margin-top:6px;font-size:13px;min-height:18px}
+  .meta{margin-top:2px}
+  .pausebtn{width:26px;height:26px}
+  .stage{margin-top:10px;margin-bottom:24px}
+  .msg{margin-top:4px;min-height:22px;font-size:14px}
+  .actions{margin-top:4px}
+  .btn{padding:6px 14px}
+  .kb{margin-top:8px;gap:6px}
+  .kb button{height:46px}
+}

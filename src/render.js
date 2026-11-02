@@ -12,12 +12,23 @@ let tileEls=[];
 export function tileAt(r,c){return tileEls[r]?.[c];}
 export function updateMeta(){if(!G)return;$('mTime').textContent=fmtTime(G.elapsed||0);$('mChecks').textContent=G.checks||0;}
 
-/** Sizes the tiles to fit the screen. Runs on build and on window resize. */
+/* Height of the screen with the browser's toolbars showing (CSS svh). On iPhone Safari this
+   excludes the address bar and bottom toolbar, and it doesn't change while scrolling. */
+let probe=null;
+function visibleHeight(){
+  if(!probe){probe=document.createElement('div');probe.style.cssText='position:fixed;top:0;left:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';document.body.appendChild(probe);}
+  return Math.min(probe.offsetHeight||window.innerHeight,window.innerHeight);
+}
+/** Sizes the tiles so the whole game (header, board, buttons, keyboard) fits on one screen. */
 export function layout(){
   if(!G)return;
   const n=G.n;const g=n<=5?7:n<=7?6:5;
+  // Everything on the page except the tiles themselves, measured rather than guessed.
+  const root=getComputedStyle(document.documentElement);
+  const chrome=document.querySelector('.bar').offsetHeight+document.querySelector('main').offsetHeight-tilesEl.offsetHeight
+    +parseFloat(root.paddingTop)+parseFloat(root.paddingBottom);
   const availW=Math.min(window.innerWidth-80,460);
-  const availH=Math.max(220,window.innerHeight-480);
+  const availH=Math.max(180,visibleHeight()-chrome);
   const side=Math.min(availW,availH,n*66+(n-1)*g);
   const t=Math.floor((side-(n-1)*g)/n);
   const real=t*n+g*(n-1);
