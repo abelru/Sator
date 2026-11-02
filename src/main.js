@@ -27,7 +27,14 @@ function wire(){
   $('btnHint').onclick=askHint;$('btnNext').onclick=nextPuzzle;$('btnResult').onclick=openResult;$('btnReveal').onclick=askReveal;
   $('optAssist').checked=S.settings.assist;$('optAssist').onchange=e=>{S.settings.assist=e.target.checked;saveState();render();};
   $('optTheme').value=S.settings.theme;$('optTheme').onchange=e=>{S.settings.theme=e.target.value;applyTheme();saveState();};
-  window.addEventListener('resize',layout);
+  // Mobile browsers fire resize whenever the address bar slides in or out while scrolling.
+  // Only re-fit the board for real size changes (rotation, desktop window resize).
+  let lastW=window.innerWidth,lastH=window.innerHeight;
+  window.addEventListener('resize',()=>{
+    const w=window.innerWidth,h=window.innerHeight;
+    if(w===lastW&&Math.abs(h-lastH)<200)return;
+    lastW=w;lastH=h;layout();
+  });
 }
 
 async function boot(){

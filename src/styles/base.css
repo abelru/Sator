@@ -28,7 +28,8 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 [hidden]{display:none!important}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+/* manipulation: quick repeated taps (e.g. backspace) shouldn't double-tap zoom; pinch zoom still works */
+html{scroll-padding-top:env(safe-area-inset-top,0px);touch-action:manipulation}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
 body{font-family:var(--sans);font-size:16px;line-height:1.45;min-height:100%;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer}
