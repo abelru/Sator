@@ -6,7 +6,10 @@ function loadState(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s
 export function saveState(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 export const S = loadState() || {};
-S.settings=Object.assign({assist:true,theme:'system'},S.settings||{});
+S.settings=Object.assign({assist:false,theme:'system'},S.settings||{});
+// Dead-end warnings used to default to on and now block leaderboard entry, so switch everyone
+// to off once. Players can turn them back on in settings.
+if(!S.settings.v){S.settings.assist=false;S.settings.v=2;}
 S.daily=S.daily||{}; S.uni=S.uni||{}; S.legend=S.legend||null; S.stats=S.stats||{}; S.uniSolved=S.uniSolved||{};
 S.mode=S.mode==='unlimited'?'unlimited':'daily';
 S.size=SIZES.includes(S.size)?S.size:5;

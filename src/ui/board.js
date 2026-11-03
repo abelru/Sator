@@ -30,7 +30,7 @@ export async function lbOffer(){
   if(!slot.isConnected||G!==g)return;
   slot.innerHTML='';
   if(!list){slot.innerHTML='<p class="small">Couldn’t load the leaderboard right now.</p>';return;}
-  const mine=list.some(e=>e.id===me),clean=g.state==='won'&&!g.hints&&g.elapsed>=MIN_MS;
+  const mine=list.some(e=>e.id===me),clean=g.state==='won'&&!g.hints&&!g.assisted&&g.elapsed>=MIN_MS;
   const fits=list.length<10||g.elapsed<list[list.length-1].ms;
   if(clean&&!mine&&!g.lbDone&&fits&&me){
     const box=document.createElement('div');
@@ -45,7 +45,7 @@ export async function lbOffer(){
       catch(e){$('lbSave').disabled=false;$('lbErr').textContent='Couldn’t save your time. Try again in a moment.';}
     };
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('lbSave').click();}});
-  }else if(g.state==='won'&&g.hints){slot.insertAdjacentHTML('beforeend','<p class="small">Solves with hints don’t go on the leaderboard.</p>');}
+  }else if(g.state==='won'&&(g.hints||g.assisted)){slot.insertAdjacentHTML('beforeend',`<p class="small">Solves with ${g.hints?'hints':'dead-end warnings on'} don’t go on the leaderboard.</p>`);}
   else if(clean&&!mine&&!g.lbDone&&!fits){slot.insertAdjacentHTML('beforeend',`<p class="small">${fmtPrecise(g.elapsed)} wasn’t quite fast enough for today’s top ten.</p>`);}
   const h=document.createElement('p');h.innerHTML=`<b>Today’s fastest ${g.n}×${g.n}</b>`;slot.appendChild(h);
   slot.appendChild(lbList(list,g.n,me));
@@ -58,7 +58,7 @@ async function renderBoard(){
   const chips=document.createElement('div');chips.className='lb-sizes';chips.setAttribute('role','group');chips.setAttribute('aria-label','Board size');
   for(let n=3;n<=8;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-label',`${n} by ${n}`);b.setAttribute('aria-pressed',n===want);b.onclick=()=>{lbSize=n;renderBoard();};chips.appendChild(b);}
   body.appendChild(chips);
-  const note=document.createElement('p');note.className='small';note.textContent=`Daily puzzle ${day}. Only solves without hints count, and a new board starts at midnight.`;body.appendChild(note);
+  const note=document.createElement('p');note.className='small';note.textContent=`Daily puzzle ${day}. Only solves without hints or dead-end warnings count, and a new board starts at midnight.`;body.appendChild(note);
   const slot=document.createElement('div');body.appendChild(slot);
   if(!leaderboardEnabled){slot.innerHTML=OFF;return;}
   slot.innerHTML='<p class="small">Loading…</p>';

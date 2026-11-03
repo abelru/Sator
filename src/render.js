@@ -65,15 +65,17 @@ export function render(){
   renderChrome();
   if(!G){$('msg').textContent='';return;}
   const n=G.n;const [sr,sc]=G.sel||[0,0];const play=G.state==='play';const wi=G.dir==='down'?sc:sr;
+  // Selection highlights only while actively playing; drawn under the paused cover they blur into a glowing box.
+  const live=play&&!paused;
   const dead=deadRows();
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const b=tileEls[r][c];const ch=G.grid[r][c];
     b.textContent=ch;
     const locked=!editable(r,c);
     b.classList.toggle('filled',!!ch&&!locked);
-    b.classList.toggle('sel',play&&r===sr&&c===sc);
-    b.classList.toggle('mirror',play&&r===sc&&c===sr&&sr!==sc);
-    b.classList.toggle('word',play&&!locked&&(r===wi||c===wi));
+    b.classList.toggle('sel',live&&r===sr&&c===sc);
+    b.classList.toggle('mirror',live&&r===sc&&c===sr&&sr!==sc);
+    b.classList.toggle('word',live&&!locked&&(r===wi||c===wi));
     const good=G.status[r]==='ok'&&G.status[c]==='ok';
     b.classList.toggle('good',!locked&&good&&G.state!=='revealed');
     b.classList.toggle('bad',!locked&&(G.status[r]==='bad'||G.status[c]==='bad'));

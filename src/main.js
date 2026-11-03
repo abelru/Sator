@@ -9,7 +9,7 @@ import './styles/responsive.css';
 import { S, SIZES, saveState } from './state.js';
 import { $ } from './dom.js';
 import { ensureSize } from './words.js';
-import { loadGame, startClock, startPlay, pause, setMode, setSize, nextPuzzle, askHint, askReveal } from './game.js';
+import { loadGame, startClock, startPlay, pause, setMode, setSize, nextPuzzle, askHint, askReveal, markAssist } from './game.js';
 import { build, render, layout, setMsg } from './render.js';
 import { initDialogs, openDlg } from './ui/dialogs.js';
 import { buildKb, bindKeys } from './ui/keyboard.js';
@@ -25,7 +25,7 @@ function wire(){
   $('btnHelp').onclick=()=>openDlg('dlgHelp');$('btnStats').onclick=openStats;$('btnBoard').onclick=openBoard;$('btnPlay').onclick=startPlay;
   $('btnPause').onclick=pause;$('btnSettings').onclick=()=>openDlg('dlgSettings');
   $('btnHint').onclick=askHint;$('btnNext').onclick=nextPuzzle;$('btnResult').onclick=openResult;$('btnReveal').onclick=askReveal;
-  $('optAssist').checked=S.settings.assist;$('optAssist').onchange=e=>{S.settings.assist=e.target.checked;saveState();render();};
+  $('optAssist').checked=S.settings.assist;$('optAssist').onchange=e=>{S.settings.assist=e.target.checked;markAssist();saveState();render();};
   $('optTheme').value=S.settings.theme;$('optTheme').onchange=e=>{S.settings.theme=e.target.value;applyTheme();saveState();};
   // Mobile browsers fire resize whenever the address bar slides in or out while scrolling.
   // Only re-fit the board for real size changes (rotation, desktop window resize).

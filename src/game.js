@@ -59,7 +59,9 @@ export function startClock(){
     if(document.visibilityState==='hidden'&&G&&G.state==='play'&&!paused){paused=true;render();}
     saveState();});
 }
-export function startPlay(){if(!G||G.state!=='play')return;paused=false;G.started=true;clockT=Date.now();tick();saveState();render();setMsg('');}
+export function startPlay(){if(!G||G.state!=='play')return;paused=false;G.started=true;markAssist();clockT=Date.now();tick();saveState();render();setMsg('');}
+/** Dead-end warnings are a form of help: once they're on during a puzzle, that solve can't go on the leaderboard. */
+export function markAssist(){if(G&&G.state==='play'&&S.settings.assist&&!G.assisted){G.assisted=true;saveState();}}
 export function pause(){if(G&&G.state==='play'&&!paused){paused=true;saveState();render();}}
 
 /** Tapping a square selects it; tapping it again flips between typing across and down. */
