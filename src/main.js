@@ -15,6 +15,7 @@ import { initDialogs, openDlg } from './ui/dialogs.js';
 import { buildKb, bindKeys } from './ui/keyboard.js';
 import { openResult, openStats } from './ui/result.js';
 import { openBoard } from './ui/board.js';
+import { initAnalytics } from './services/analytics.js';
 
 function applyTheme(){const t=S.settings.theme;if(t==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);}
 
@@ -38,7 +39,7 @@ function wire(){
 }
 
 async function boot(){
-  applyTheme();initDialogs();buildKb();bindKeys();wire();render();
+  initAnalytics();applyTheme();initDialogs();buildKb();bindKeys();wire();render();
   if(!S.seenHelp)openDlg('dlgHelp');
   try{await ensureSize(S.size);}
   catch(e){setMsg('Couldn’t load the puzzles. Check your connection and reload.');return;}

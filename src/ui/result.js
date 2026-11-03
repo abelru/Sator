@@ -6,6 +6,7 @@ import { puzzle } from '../words.js';
 import { today, untilMidnight, fmtTime } from '../time.js';
 import { openDlg, closeDlg, toast } from './dialogs.js';
 import { lbOffer } from './board.js';
+import { track } from '../services/analytics.js';
 
 function shareText(g){
   const n=g.n;const head=g.mode==='daily'?`Sator daily ${g.day}, ${n}×${n}`:g.mode==='legend'?'Sator legendary 9×9':`Sator unlimited, ${n}×${n}`;
@@ -17,6 +18,7 @@ function shareText(g){
 /** Copies the share text. If the clipboard is blocked, shows it in a textarea inside `body` instead. */
 async function share(g,body){
   const text=shareText(g);
+  track('share','Shared a result');
   try{await navigator.clipboard.writeText(text);toast('Copied to clipboard');}
   catch(e){const box=body.querySelector('textarea.copy')||document.createElement('textarea');box.className='copy';box.value=text;box.readOnly=true;
     body.appendChild(box);box.select();toast('Copy the text below');}

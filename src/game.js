@@ -6,6 +6,7 @@ import { findCompletion } from './solver.js';
 import { build, render, setMsg, animate, tileAt, shakeTiles, updateMeta } from './render.js';
 import { confirmBox } from './ui/dialogs.js';
 import { openResult } from './ui/result.js';
+import { track } from './services/analytics.js';
 
 export let G = null;
 export let paused = true;
@@ -59,7 +60,9 @@ export function startClock(){
     if(document.visibilityState==='hidden'&&G&&G.state==='play'&&!paused){paused=true;render();}
     saveState();});
 }
-export function startPlay(){if(!G||G.state!=='play')return;paused=false;G.started=true;markAssist();clockT=Date.now();tick();saveState();render();setMsg('');}
+/** Event names look like 'solve-daily-5' so the dashboard groups them by mode and size. */
+const label=g=>`${g.mode}-${g.n}`;
+export function startPlay(){if(!G||G.state!=='play')return;if(!G.started)track(`play-${label(G)}`,`Started ${G.mode} ${G.n}×${G.n}`);paused=false;G.started=true;markAssist();clockT=Date.now();tick();saveState();render();setMsg('');}
 /** Dead-end warnings are a form of help: once they're on during a puzzle, that solve can't go on the leaderboard. */
 export function markAssist(){if(G&&G.state==='play'&&S.settings.assist&&!G.assisted){G.assisted=true;saveState();}}
 export function pause(){if(G&&G.state==='play'&&!paused){paused=true;saveState();render();}}
@@ -213,6 +216,7 @@ function diagWord(){let w='';for(let i=0;i<G.n;i++)w+=G.grid[i][i];return w;}
 function win(){
   const dw=diagWord();G.bonus=dict(G.n).has(dw)?dw:null;G.bonusShown=false;
   G.state='won';finishStats(true);saveState();render();
+  track(`solve-${label(G)}${G.hints?'-hints':''}`,`Solved ${G.mode} ${G.n}×${G.n}${G.hints?' with hints':''}`);
   setMsg(G.hints?'Solved with hints.':G.checks===0?'Solved without a single check.':G.checks===1?'Solved on the first check.':'Solved.');
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sweep=still?100:G.n*90+500;
@@ -225,6 +229,7 @@ function win(){
 function reveal(){
   for(let r=0;r<G.n;r++)for(let c=0;c<G.n;c++)G.grid[r][c]=G.sol[r][c];
   G.status=G.status.map(()=>'ok');G.state='revealed';finishStats(false);saveState();render();
+  track(`reveal-${label(G)}`,`Revealed ${G.mode} ${G.n}×${G.n}`);
   setMsg('Here’s our answer.');
 }
 export function askReveal(){

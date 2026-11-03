@@ -5,6 +5,7 @@ import { G } from '../game.js';
 import { today, fmtPrecise } from '../time.js';
 import { openDlg } from './dialogs.js';
 import { leaderboardEnabled, myId, fetchTop, submitTime } from '../services/leaderboard.js';
+import { track } from '../services/analytics.js';
 
 // Matches the minimum time firestore.rules accepts, so we never offer a spot the server will refuse.
 const MIN_MS=1000;
@@ -41,7 +42,7 @@ export async function lbOffer(){
       const name=inp.value.trim().replace(/\s+/g,' ').slice(0,16);
       if(!name){$('lbErr').textContent='Type your first name first.';inp.focus();return;}
       $('lbSave').disabled=true;S.lbName=name;saveState();
-      try{await submitTime(g.n,g.day,name,g.elapsed);g.lbDone=true;saveState();lbOffer();}
+      try{await submitTime(g.n,g.day,name,g.elapsed);g.lbDone=true;saveState();track(`leaderboard-${g.n}`,`Leaderboard entry ${g.n}×${g.n}`);lbOffer();}
       catch(e){$('lbSave').disabled=false;$('lbErr').textContent='Couldn’t save your time. Try again in a moment.';}
     };
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('lbSave').click();}});
