@@ -6,10 +6,10 @@ import './styles/keyboard.css';
 import './styles/dialogs.css';
 import './styles/responsive.css';
 
-import { S, SIZES, saveState } from './state.js';
+import { S, saveState } from './state.js';
 import { $ } from './dom.js';
 import { ensureSize } from './words.js';
-import { loadGame, startClock, startPlay, pause, setMode, setSize, nextPuzzle, askHint, askReveal, markAssist } from './game.js';
+import { loadGame, startClock, startPlay, pause, setMode, setSize, setFree, nextPuzzle, askHint, askReveal, markAssist } from './game.js';
 import { build, render, layout, setMsg } from './render.js';
 import { initDialogs, openDlg } from './ui/dialogs.js';
 import { buildKb, bindKeys } from './ui/keyboard.js';
@@ -20,8 +20,15 @@ import { initAnalytics } from './services/analytics.js';
 function applyTheme(){const t=S.settings.theme;if(t==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);}
 
 function wire(){
-  SIZES.forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.n=n;b.setAttribute('role','radio');b.setAttribute('aria-label',`${n} by ${n}`);
+  // Size row: 3–6 as buttons, then the Free play toggle, then 7–9 under an Expert dropdown.
+  [3,4,5,6].forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.n=n;b.setAttribute('role','radio');b.setAttribute('aria-label',`${n} by ${n}`);
     b.innerHTML=`${n}<span class="tick"></span>`;b.onclick=()=>setSize(n);$('sizes').appendChild(b);});
+  const free=document.createElement('button');free.type='button';free.id='btnFree';free.className='free';free.textContent='Free play';
+  free.title='No starting word. Doesn’t count for the leaderboard.';free.onclick=()=>setFree(!S.free);$('sizes').appendChild(free);
+  const wrap=document.createElement('span');wrap.className='expert';
+  wrap.innerHTML='<select id="selExpert" aria-label="Expert boards"><option value="" disabled hidden>Expert</option><option value="7"></option><option value="8"></option><option value="9"></option></select>';
+  $('sizes').appendChild(wrap);
+  $('selExpert').onchange=e=>{if(e.target.value)setSize(+e.target.value);};
   $('tabDaily').onclick=()=>setMode('daily');$('tabUni').onclick=()=>setMode('unlimited');
   $('btnHelp').onclick=()=>openDlg('dlgHelp');$('btnStats').onclick=openStats;$('btnBoard').onclick=openBoard;$('btnPlay').onclick=startPlay;
   $('btnPause').onclick=pause;$('btnSettings').onclick=()=>openDlg('dlgSettings');

@@ -28,6 +28,11 @@ export async function fetchTop(n,day){
       .filter(e=>e.name&&typeof e.ms==='number'&&isFinite(e.ms)&&e.ms>0);
   }catch(e){return null;}
 }
+/** Saves a solved square nobody has made before (rows: the n×n letters, row by row). Fire and forget. */
+export async function submitSquare(n,rows){
+  if(!leaderboardEnabled)return;
+  try{await (await connect()).addSquare(n,rows);}catch(e){}
+}
 export async function submitTime(n,day,name,ms){
   await (await connect()).submit(boardId(n,day),{name,ms:Math.round(ms)});
 }

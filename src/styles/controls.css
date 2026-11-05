@@ -10,6 +10,15 @@
 .sizes button .tick{position:absolute;right:-4px;top:-4px;width:14px;height:14px;border-radius:50%;background:var(--verd);display:none;border:2px solid var(--bg)}
 .sizes button.done .tick{display:block}
 .sizes button.done.assist .tick{background:#E2B42A}
+.sizes{align-items:center}
+/* Free play is a mode, not a size: it uses the ink fill of the selected mode tab, not lapis. */
+.sizes .free{width:auto;padding:0 12px;font-family:var(--sans);font-weight:600;font-size:14px;color:var(--muted)}
+.sizes .free[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.expert{position:relative;display:inline-flex}
+.expert select{appearance:none;-webkit-appearance:none;height:40px;border-radius:8px;border:1px solid var(--tile-line);background:var(--tile);color:var(--muted);font-family:var(--sans);font-weight:600;font-size:14px;padding:0 28px 0 12px;cursor:pointer}
+.expert::after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-70%) rotate(45deg);pointer-events:none;color:var(--muted)}
+.expert.on select{background:var(--lapis);border-color:var(--lapis);color:var(--on-lapis);font-family:var(--serif);font-weight:700}
+.expert.on::after{color:var(--on-lapis)}
 .caption{margin:10px 0 0;color:var(--muted);font-size:14px;text-align:center;min-height:20px}
 .meta{display:flex;gap:20px;justify-content:center;align-items:center;margin-top:6px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .pausebtn{width:30px;height:30px;border:1px solid var(--tile-line);border-radius:50%;background:var(--surface);display:grid;place-items:center;padding:0;margin-left:-8px}

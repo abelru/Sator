@@ -1,7 +1,7 @@
 /* Draws the board and the controls around it from the current game state. */
 import { S } from './state.js';
 import { $ } from './dom.js';
-import { G, paused, editable, select } from './game.js';
+import { G, paused, editable, select, lo } from './game.js';
 import { count, fits } from './words.js';
 import { today, fmtTime } from './time.js';
 
@@ -51,12 +51,13 @@ export function build(){
     tilesEl.appendChild(b);tileEls[r].push(b);
   }
   const m=document.createElement('div');m.className='mk';m.innerHTML='<span></span>';markersEl.appendChild(m);cmarkersEl.appendChild(m.cloneNode(true));}
+  renderChrome(); // chrome (mode tabs, caption) must be current before layout() measures it
   layout();
 }
 function deadRows(){
   const out=Array(G.n).fill(false);
   if(!S.settings.assist||G.state!=='play')return out;
-  for(let i=1;i<G.n;i++){if(G.status[i])continue;const row=G.grid[i];const filled=row.filter(Boolean).length;
+  for(let i=lo();i<G.n;i++){if(G.status[i])continue;const row=G.grid[i];const filled=row.filter(Boolean).length;
     if(filled>=2&&filled<G.n&&!fits(G.n,row))out[i]=true;}
   return out;
 }
@@ -98,21 +99,29 @@ export function render(){
   $('btnPause').style.visibility=play&&!paused?'visible':'hidden';
   $('btnHint').disabled=!play||paused;$('btnReveal').hidden=!play||paused;
   const legend=G.mode==='legend';
-  $('btnNext').hidden=legend?play:G.mode!=='unlimited';
+  $('btnNext').hidden=legend?play:G.mode!=='unlimited'&&G.mode!=='free';
   $('btnNext').textContent=legend?'Start over':'New puzzle';
   $('btnResult').hidden=play;
   $('kb').style.opacity=play&&!paused?'1':'.5';
   updateMeta();
 }
 function renderChrome(){
-  $('modes').hidden=S.size===9;
+  $('modes').hidden=S.size===9||S.free;
   $('tabDaily').setAttribute('aria-selected',S.mode==='daily');$('tabUni').setAttribute('aria-selected',S.mode==='unlimited');
-  const d=today();
-  [...$('sizes').children].forEach(b=>{const n=+b.dataset.n;b.setAttribute('aria-checked',n===S.size);
-    const dg=S.daily[n];const st9=S.stats[9]||{};const dn=n===9?!!st9.legendWon:S.mode==='daily'&&!!dg&&dg.day===d&&dg.state==='won';b.classList.toggle('done',dn);b.classList.toggle('assist',dn&&(n===9?!st9.legendClean:dg.hints>0));});
+  const d=today(),st9=S.stats[9]||{};
+  // Green tick = today's daily solved at that size (yellow if hints were used). Never shown in free play.
+  const done=n=>{if(S.free)return null;const dg=S.daily[n];
+    if(n===9)return st9.legendWon?(st9.legendClean?'clean':'assist'):null;
+    return S.mode==='daily'&&dg&&dg.day===d&&dg.state==='won'?(dg.hints>0?'assist':'clean'):null;};
+  $('sizes').querySelectorAll('button[data-n]').forEach(b=>{const n=+b.dataset.n,dn=done(n);b.setAttribute('aria-checked',n===S.size);
+    b.classList.toggle('done',!!dn);b.classList.toggle('assist',dn==='assist');});
+  $('btnFree').setAttribute('aria-pressed',S.free);
+  const ex=$('selExpert');ex.value=S.size>=7?String(S.size):'';ex.parentElement.classList.toggle('on',S.size>=7);
+  [...ex.options].forEach(o=>{if(!o.value)return;const n=+o.value;o.textContent=`${n}×${n}${done(n)?' ✓':''}`;});
   let cap='';
   if(G){
-    if(G.mode==='legend')cap='One legendary square, built from rare dictionary words';
+    if(G.mode==='free')cap=`Free play ${G.n}×${G.n}: no starting word, any square counts`;
+    else if(G.mode==='legend')cap='One legendary square, built from rare dictionary words';
     else if(G.mode==='daily')cap=`Daily puzzle ${G.day}, ${G.n}×${G.n}, ${TIER[G.n]}`;
     else cap=`Unlimited puzzle ${G.idx+1} of ${count(G.n,'unlimited')}, ${TIER[G.n]}`;
   }

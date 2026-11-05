@@ -9,9 +9,9 @@ import { lbOffer } from './board.js';
 import { track } from '../services/analytics.js';
 
 function shareText(g){
-  const n=g.n;const head=g.mode==='daily'?`Sator daily ${g.day}, ${n}×${n}`:g.mode==='legend'?'Sator legendary 9×9':`Sator unlimited, ${n}×${n}`;
+  const n=g.n;const head=g.mode==='daily'?`Sator daily ${g.day}, ${n}×${n}`:g.mode==='legend'?'Sator legendary 9×9':g.mode==='free'?`Sator free play, ${n}×${n}`:`Sator unlimited, ${n}×${n}`;
   const lines=[];
-  for(let r=0;r<n;r++){let l='';for(let c=0;c<n;c++){l+=!editable(r,c)?'🟦':g.hinted[r][c]?'🟨':'🟩';}lines.push(l);}
+  for(let r=0;r<n;r++){let l='';for(let c=0;c<n;c++){l+=!editable(r,c,g)?'🟦':g.hinted[r][c]?'🟨':'🟩';}lines.push(l);}
   const tail=g.state==='won'?`${fmtTime(g.elapsed)}, ${g.checks} ${g.checks===1?'check':'checks'}, ${g.hints} ${g.hints===1?'hint':'hints'}`:'Answer revealed';
   return `${head}\n${lines.join('\n')}\n${tail}${g.state==='won'&&g.bonus?'\n✨ Diagonal bonus':''}`;
 }
@@ -29,17 +29,18 @@ export function openResult(){
   if(!G)return;
   const won=G.state==='won';
   $('resTitle').textContent=won?(G.hints?'Solved with hints':'Solved'):'Answer revealed';
-  const differs=won&&G.grid.some((row,i)=>row.join('')!==G.sol[i]);
+  const differs=won&&G.mode!=='free'&&G.grid.some((row,i)=>row.join('')!==G.sol[i]);
   let h='';
   if(won&&G.bonus)h+=`<p class="bonus-note">✨ Diagonal bonus: top-left to bottom-right spells <b>${G.bonus.toUpperCase()}</b> too.</p>`;
   if(won)h+=`<div class="res-line"><span>Time <b>${fmtTime(G.elapsed)}</b></span><span>Checks <b>${G.checks}</b></span><span>Hints <b>${G.hints}</b></span></div>`;
+  if(won&&G.newSquare)h+=`<p class="small">That square is brand new. We saved it, and it may turn up as a daily ${G.n}×${G.n} puzzle on a later day.</p>`;
   if(won&&G.hints)h+=`<p class="small">You used ${G.hints} ${G.hints===1?'hint':'hints'}, so this isn’t a clean solve.</p>`;
   if(G.mode==='daily'&&won)h+='<div id="lbSlot"></div>';
   if(differs)h+=`<p class="small">Your square is different from ours. Here’s the one we had:</p>${miniGrid(G.sol)}`;
   if(!won)h+=`<p class="small">Our answer is on the board. ${G.mode==='daily'?'Your daily streak for this size starts over.':''}</p>`;
   if(G.mode==='daily')h+=statsHTML(G.n)+`<p class="small">Next daily in ${untilMidnight()}.</p>`;
   h+=`<div class="row-btns"><button class="btn primary" id="rShare">Share result</button>`;
-  if(G.mode==='unlimited')h+=`<button class="btn" id="rNext">New puzzle</button>`;
+  if(G.mode==='unlimited'||G.mode==='free')h+=`<button class="btn" id="rNext">New puzzle</button>`;
   if(G.mode==='legend')h+=`<button class="btn" id="rNext">Start over</button>`;
   if(G.mode==='daily')h+=`<button class="btn" id="rUni">Play unlimited</button>`;
   h+='</div>';
@@ -61,6 +62,7 @@ export function openStats(){
   let h;
   if(n===9)h=`<p>${st.legendWon?`You’ve cracked the legendary 9×9 <b>${st.legendWon}</b> ${st.legendWon===1?'time':'times'}.`:'The legendary 9×9 is still waiting for you.'}</p>`;
   else h=`<p class="small">Daily results for ${n}×${n}.</p>`+statsHTML(n)+`<p class="small">Unlimited ${n}×${n} puzzles solved: <b>${st.uniWon||0}</b></p>`;
+  if(st.freeWon)h+=`<p class="small">Free play ${n}×${n} squares built: <b>${st.freeWon}</b></p>`;
   if(st.diag)h+=`<p class="small">✨ Diagonal bonuses at this size: <b>${st.diag}</b></p>`;
   const dg=n===9?null:S.daily[n];
   if(dg&&dg.day===today()&&dg.state!=='play')h+=`<div class="row-btns"><button class="btn primary" id="sShare">Share today’s ${n}×${n}</button></div>`;

@@ -14,6 +14,13 @@ function pool(n,mode){return DATA[n][mode==='daily'?'d':'u'];}
 export function count(n,mode){return pool(n,mode).length/(n*n);}
 export function puzzle(n,mode,idx){const s=pool(n,mode),L=n*n,f=s.substr(idx*L,L),r=[];for(let i=0;i<n;i++)r.push(f.substr(i*n,n));return r;}
 
+const known={};
+/** True if this square (n×n letters, row by row) is already one of our daily or unlimited puzzles. */
+export function isKnownSquare(n,flat){
+  if(!known[n]){const D=DATA[n],L=n*n,st=new Set();for(const p of [D.d,D.u])for(let i=0;i<p.length;i+=L)st.add(p.substr(i,L));known[n]=st;}
+  return known[n].has(flat);
+}
+
 const sets={};
 export function dict(n){if(!sets[n]){const s=DATA[n].w,st=new Set();for(let i=0;i<s.length;i+=n)st.add(s.substr(i,n));sets[n]=st;}return sets[n];}
 

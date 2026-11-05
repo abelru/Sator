@@ -20,6 +20,8 @@
   .modes button{padding:5px 16px;font-size:14px}
   .sizes{margin-top:8px}
   .sizes button{width:36px;height:36px;font-size:15px}
+  .sizes .free{width:auto}
+  .expert select{height:36px}
   .caption{margin-top:6px;font-size:13px;min-height:18px}
   .meta{margin-top:2px}
   .pausebtn{width:26px;height:26px}

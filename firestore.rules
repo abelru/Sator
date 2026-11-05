@@ -23,6 +23,22 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Player-made squares, candidates for future daily puzzles. Write-only from the game; anyone can read
+    // (they're just letters). scripts/import-squares.mjs re-checks every word before using one.
+    match /squares/{id} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['n', 'rows', 'at'])
+        && request.resource.data.n is int
+        && request.resource.data.n >= 3
+        && request.resource.data.n <= 9
+        && request.resource.data.rows is string
+        && request.resource.data.rows.size() == request.resource.data.n * request.resource.data.n
+        && request.resource.data.rows.matches('[a-z]+')
+        && request.resource.data.at == request.time;
+      allow update, delete: if false;
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;

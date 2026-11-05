@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "emulators": "firebase emulators:start --only firestore,auth --project demo-sator",
-    "deploy:rules": "firebase deploy --only firestore"
+    "deploy:rules": "firebase deploy --only firestore",
+    "import-squares": "node scripts/import-squares.mjs"
   },
   "devDependencies": {
     "firebase-tools": "^15.34.2",

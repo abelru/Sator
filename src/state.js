@@ -12,4 +12,5 @@ S.settings=Object.assign({assist:false,theme:'system'},S.settings||{});
 if(!S.settings.v){S.settings.assist=false;S.settings.v=2;}
 S.daily=S.daily||{}; S.uni=S.uni||{}; S.legend=S.legend||null; S.stats=S.stats||{}; S.uniSolved=S.uniSolved||{};
 S.mode=S.mode==='unlimited'?'unlimited':'daily';
+S.free=!!S.free; S.freeG=S.freeG||{};
 S.size=SIZES.includes(S.size)?S.size:5;

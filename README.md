@@ -1,6 +1,6 @@
 # Sator
 
-A daily word-square puzzle. Fill the grid so every row is a real word and each row matches the column with the same number. Includes daily and unlimited modes, sizes 3×3 to 8×8, one legendary 9×9, hints, stats, and a daily leaderboard for each size.
+A daily word-square puzzle. Fill the grid so every row is a real word and each row matches the column with the same number. Includes daily and unlimited modes, sizes 3×3 to 6×6 plus Expert boards (7×7, 8×8 and one legendary 9×9), free play with no starting word, hints, stats, and a daily leaderboard for each size. Squares that players invent can become future daily puzzles.
 
 Live at **[satordle.org](https://satordle.org)**.
 
@@ -27,6 +27,7 @@ The game runs without Firebase. Until you fill in `src/services/firebase-config.
 | `npm run build` | Production build into `dist/` |
 | `npm run preview` | Serve the `dist/` build locally to check it before deploying |
 | `npm run deploy:rules` | Upload `firestore.rules` to Firebase (only needed when you change the rules) |
+| `npm run import-squares` | Add player-made squares to the daily lists (see below). `-- --dry` previews, `-- --emulator` reads the local emulators |
 
 ## Project layout
 
@@ -54,6 +55,7 @@ src/
   data/3.json … 9.json     Puzzles + word list for each size
 public/favicon.svg         Copied into the build as-is
 scripts/split-data.mjs     Regenerates src/data/ from the original single-file build
+scripts/import-squares.mjs Adds player-made squares from Firestore to the daily lists
 legacy/                    The original one-file version, kept for reference
 firebase.json              Firestore + emulator config
 .github/workflows/deploy.yml  Builds and publishes to GitHub Pages on every push to main
@@ -126,6 +128,20 @@ npm run dev:emu       # terminal 2: game at http://localhost:5173 pointed at the
 ```
 
 Solve a daily puzzle without hints and add your name. The entry shows up in the emulator UI at http://localhost:4000/firestore. The emulators need Java 11 or newer (`brew install openjdk`).
+
+## Player-made squares → future dailies
+
+When someone solves a board and their square isn't already one of ours (common in free play), the game saves the letters to the Firestore `squares` collection. The rules only accept a size from 3 to 9 and exactly n×n lowercase letters.
+
+To turn them into puzzles:
+
+```bash
+npm run import-squares -- --dry    # preview
+npm run import-squares             # write to src/data/*.json
+git diff --stat src/data           # review, then commit and push
+```
+
+The script re-checks every square (symmetric, every row in the word list, not a duplicate) and inserts new ones into that size's daily list **starting two days from today**, so today's and tomorrow's puzzles never change. New 9×9 squares go to the free play pool instead, since there's no 9×9 daily. It marks 3–6 squares that use words outside our usual everyday list, and the dictionary includes crude words, so read the list before you push.
 
 ## Editing puzzles or word lists
 

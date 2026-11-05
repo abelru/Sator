@@ -2,7 +2,7 @@
    so players who never open the leaderboard never download Firebase. */
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, collection, doc, setDoc, getDocs, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, connectFirestoreEmulator, collection, doc, setDoc, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 
 export function connect(config,useEmulators){
   const app=initializeApp(config);
@@ -30,5 +30,10 @@ export function connect(config,useEmulators){
     const id=await uid();
     await setDoc(doc(db,'boards',board,'times',id),{...entry,at:serverTimestamp()});
   }
-  return {uid,top,submit};
+  /** A player-made square, saved as candidate for a future daily. Imported by scripts/import-squares.mjs. */
+  async function addSquare(n,rows){
+    await uid();
+    await addDoc(collection(db,'squares'),{n,rows,at:serverTimestamp()});
+  }
+  return {uid,top,submit,addSquare};
 }
